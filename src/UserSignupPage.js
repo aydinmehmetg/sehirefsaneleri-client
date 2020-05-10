@@ -19,7 +19,7 @@ class UserSignupPage extends Component {
           <input />
         </div>
         <div>
-          <label>Password Name</label>
+          <label>Password</label>
           <input />
         </div>
       </form>
