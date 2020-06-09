@@ -4,12 +4,18 @@ import './index.css';
 import './bootstrap.scss';
 import App from './App';
 import UserSignupPage from './pages/UserSignupPage';
+import LoginPage from './pages/LoginPage';
 import * as serviceWorker from './serviceWorker';
-
+import './i18next';
+import LanguageSelector from './components/LanguageSelector';
 
 ReactDOM.render(
   <React.StrictMode>
-    <UserSignupPage/>
+    <div>
+    <LoginPage/>
+    <LanguageSelector/>
+    </div>
+   
   </React.StrictMode>,
   document.getElementById('root')
 );

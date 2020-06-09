@@ -1,46 +1,44 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { signup } from "../api/apiCalls";
-
-//her classın Renderi override etmesi gerekir ve jsx formatı return edip dönmesi gerekiyor
-/*İki tür componentler var bir functions ve class componentler, function componentler == stataless komponentler oluyor
-  içerisinde state(durum) taşımayan komponentlerdir. Stateful component == Class componentler ise sayfaya ait bilgileri durumları taşıyan com-
-  ponentlerdir*/
-//onChange in event targeti geliyor bu evetin targitı ve onunda altında value vardır
+import Input from "../components/Input";
+import { withTranslation } from "react-i18next";
 
 class UserSignupPage extends Component {
-  //componentin statesini eziyoruz aslında
   state = {
     username: null,
     displayName: null,
     password: null,
     passwordRepeat: null,
     pendigApiCall: false,
+    errors: {},
   };
   onChange = (event) => {
-    const { name, value } = event.target; //Object Destructuring deniyor obje parçalama name  olarak çekiyoruz değerleri
-    //Statelerimize değer atarken setState içinde yapmak zorundayız ve yazdığımız değerler state tutuluyor.
+    const { t } = this.props;
+    const { name, value } = event.target;
+    const errors = { ...this.state.errors };
+    errors[name] = undefined;
+
+    if (name === "password" || name === "passwordRepeat") {
+      if (name === "password" && value !== this.state.passwordRepeat) {
+        errors.passwordRepeat = t("Password mismatch");
+      } else if (name === "passwordRepeat" && value !== this.state.password) {
+        errors.passwordRepeat = t("Password mismatch");
+      } else {
+        errors.passwordRepeat = undefined;
+      }
+    }
+
     this.setState({
-      //[] kullanmamızın sebebi değer ataması yaptığımız için
       [name]: value,
+      errors,
     });
   };
-  // prevent deault yapmamızın sebebi bu butonun on submit özelliği ile geliyor ama bunubiyere göndermek istiyor
-  //ama biz bunu preventDefault() methodu ile durduruyoruz
   onClickSignup = async (event) => {
     event.preventDefault();
-    //json objesi oluşturuyor body
-    /*  const body = {
-        username: this.state.username,
-        displayName: this.state.displayName,
-        password: this.state.password,
-      };*/
     const { username, displayName, password } = this.state;
 
     const body = {
-      /*username,
-        displayName,
-        password, (bu tarz kullanımda var atadığımız değer ve gelen değerin isimleri aynı ise)*/
       username: username,
       displayName: displayName,
       password: password,
@@ -49,10 +47,15 @@ class UserSignupPage extends Component {
       pendigApiCall: true,
     });
 
-    //axios.post("http://localhost:8080/api/1.0/users", body); amaç localhost yazısı olmadan atmak
     try {
       const response = await signup(body);
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.data.validationErros) {
+        this.setState({
+          errors: error.response.data.validationErros,
+        });
+      }
+    }
 
     this.setState({
       pendigApiCall: false,
@@ -60,61 +63,58 @@ class UserSignupPage extends Component {
   };
 
   render() {
-    const { pendigApiCall } = this.state;
+    const { pendigApiCall, errors } = this.state;
+    const { username, displayName, password, passwordRepeat } = errors;
+    const { t } = this.props;
     return (
       <div className="container">
         <form>
-          <h1 className="display-3 text-center">Sign Up</h1>
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              className="form-control"
-              name="username"
-              onChange={this.onChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Displaya Name</label>
-            <input
-              className="form-control"
-              name="displayName"
-              onChange={this.onChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              className="form-control"
-              name="password"
-              type="Password"
-              onChange={this.onChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Password Repeat</label>
-            <input
-              className="form-control"
-              name="passwordRepeat"
-              type="Password"
-              onChange={this.onChange}
-            />
-          </div>
+          <h1 className="display-3 text-center">{t("Sign Up")}</h1>
+          <Input
+            error={username}
+            label={t("Username")}
+            name="username"
+            onChange={this.onChange}
+          />
+          <Input
+            error={displayName}
+            label={t("Display Name")}
+            name="displayName"
+            onChange={this.onChange}
+          />
+          <Input
+            type="password"
+            error={password}
+            label={t("Password")}
+            name="password"
+            onChange={this.onChange}
+          />
+
+          <Input
+            type="password"
+            error={passwordRepeat}
+            label={t("PasswordRepeat")}
+            name="passwordRepeat"
+            onChange={this.onChange}
+          />
           <div className="text-center">
             <button
               className="btn btn-outline-success"
               onClick={this.onClickSignup}
-              disabled={pendigApiCall}
+              disabled={pendigApiCall || passwordRepeat !== undefined}
             >
               {pendigApiCall && (
                 <span className="spinner-border spinner-border-sm"></span>
               )}
-              Sign Up
+              {t("Sign Up")}
             </button>
           </div>
+         
         </form>
       </div>
     );
   }
 }
-//Her component en az bir fonksiyon veya class export etmeli
-export default UserSignupPage;
+
+const UserSignupPageWithTranslation = withTranslation()(UserSignupPage);
+export default UserSignupPageWithTranslation;
