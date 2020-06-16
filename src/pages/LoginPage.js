@@ -5,14 +5,16 @@ import { login } from "../api/apiCalls";
 import axios from "axios";
 import ButtonWithProgress from "../components/ButtonWithProgress";
 import { withApiProgress } from "../shared/ApiProgress";
+import {Authentication} from '../shared/AuthenticationContext';
 
 class LoginPage extends Component {
+  static contextType=Authentication;
   state = {
     username: null,
     password: null,
     error: null,
   };
-
+  
  
   onChange = (event) => {
     const { name, value } = event.target;
@@ -23,10 +25,11 @@ class LoginPage extends Component {
   };
   ocClickLogin = async (event) => {
     event.preventDefault();
-    const {onLogginSuccess}=this.props;
+    const {onLogginSuccess}=this.context;
+    const {username,password}=this.state;
     const crends = {
-      username: this.state.username,
-      password: this.state.password,
+      username: username,
+      password:password,
     };
 
     const {push} = this.props.history;
@@ -34,9 +37,17 @@ class LoginPage extends Component {
       error: null,
     });
     try {
-      await login(crends);
+      const response = await login(crends);
       push('/');
-      onLogginSuccess(this.state.username)
+      
+      const autState={
+        // ...response.data bunu dersekte aşğıdaki gibi olur
+        username:response.data.username,
+        password:password,
+        displayName:response.data.displayName,
+        image:response.data.image,
+      }
+      onLogginSuccess(autState)
     } catch (apiError) {
       console.log("hata:"+apiError)
       this.setState({

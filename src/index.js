@@ -5,10 +5,13 @@ import "./bootstrap.scss";
 import App from "./container/App";
 import * as serviceWorker from "./serviceWorker";
 import "./i18next";
+import AuthenticationContext from "./shared/AuthenticationContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AuthenticationContext>
+      <App />
+    </AuthenticationContext>
   </React.StrictMode>,
   document.getElementById("root")
 );
