@@ -1,23 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import './bootstrap.scss';
-import App from './App';
-import UserSignupPage from './pages/UserSignupPage';
-import LoginPage from './pages/LoginPage';
-import * as serviceWorker from './serviceWorker';
-import './i18next';
-import LanguageSelector from './components/LanguageSelector';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import "./bootstrap.scss";
+import App from "./container/App";
+import * as serviceWorker from "./serviceWorker";
+import "./i18next";
 
 ReactDOM.render(
   <React.StrictMode>
-    <div>
-    <LoginPage/>
-    <LanguageSelector/>
-    </div>
-   
+    <App />
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

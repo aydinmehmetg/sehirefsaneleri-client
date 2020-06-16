@@ -3,6 +3,8 @@ import axios from "axios";
 import { signup } from "../api/apiCalls";
 import Input from "../components/Input";
 import { withTranslation } from "react-i18next";
+import ButtonWithProgress from "../components/ButtonWithProgress";
+import {withApiProgress}  from "../shared/ApiProgress";
 
 class UserSignupPage extends Component {
   state = {
@@ -10,7 +12,6 @@ class UserSignupPage extends Component {
     displayName: null,
     password: null,
     passwordRepeat: null,
-    pendigApiCall: false,
     errors: {},
   };
   onChange = (event) => {
@@ -43,9 +44,6 @@ class UserSignupPage extends Component {
       displayName: displayName,
       password: password,
     };
-    this.setState({
-      pendigApiCall: true,
-    });
 
     try {
       const response = await signup(body);
@@ -56,16 +54,12 @@ class UserSignupPage extends Component {
         });
       }
     }
-
-    this.setState({
-      pendigApiCall: false,
-    });
   };
 
   render() {
-    const { pendigApiCall, errors } = this.state;
+    const { errors } = this.state;
     const { username, displayName, password, passwordRepeat } = errors;
-    const { t } = this.props;
+    const { t ,pendingApiCall} = this.props;
     return (
       <div className="container">
         <form>
@@ -98,16 +92,12 @@ class UserSignupPage extends Component {
             onChange={this.onChange}
           />
           <div className="text-center">
-            <button
-              className="btn btn-outline-success"
+            <ButtonWithProgress
               onClick={this.onClickSignup}
-              disabled={pendigApiCall || passwordRepeat !== undefined}
-            >
-              {pendigApiCall && (
-                <span className="spinner-border spinner-border-sm"></span>
-              )}
-              {t("Sign Up")}
-            </button>
+              disabled={pendingApiCall || passwordRepeat !== undefined}
+              pendingApiCall={pendingApiCall}
+              text={t("Sign Up")}
+            />
           </div>
          
         </form>
@@ -116,5 +106,9 @@ class UserSignupPage extends Component {
   }
 }
 
-const UserSignupPageWithTranslation = withTranslation()(UserSignupPage);
+
+
+const UserSignupPageWithApiProgress = withApiProgress(UserSignupPage,"/api/1.0/users");
+const UserSignupPageWithTranslation = withTranslation()(UserSignupPageWithApiProgress);
+
 export default UserSignupPageWithTranslation;

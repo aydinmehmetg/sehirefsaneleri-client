@@ -11,7 +11,8 @@ i18next.use(initReactI18next).init({
         'Username':'Username',
         'Sign Up':'Sign Up',
         'Password mismatch' :'Password mismatch',
-        'Login':'Login'
+        'Login':'Login',
+        'Logout':'Logout'
 
       },
     },
@@ -23,7 +24,8 @@ i18next.use(initReactI18next).init({
         'Username':'Kullanıcı Adı',
         'Sign Up':'Kayıt Ol',
         'Password mismatch':'Aynı şifreyi giriniz.',
-        'Login':'Giriş Yap'
+        'Login':'Giriş Yap',
+        'Logout':'Çıkış Yap'
       },
     },
   },
